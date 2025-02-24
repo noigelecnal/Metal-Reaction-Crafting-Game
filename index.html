@@ -28,6 +28,18 @@
             font-size: 20px;
             cursor: grab;
         }
+        #reaction-box {
+            width: 300px;
+            height: 150px;
+            margin: 20px auto;
+            background-color: lightgray;
+            border: 2px dashed #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
         #reaction-result {
             margin-top: 30px;
             font-size: 20px;
@@ -37,7 +49,7 @@
 </head>
 <body>
     <h1>Industrial Metal Reaction Game</h1>
-    <p>Drag one element over another to see reactions!</p>
+    <p>Drag elements into the box and combine them to see reactions!</p>
     
     <div id="game-container">
         <div class="element" draggable="true" id="iron">Fe</div>
@@ -48,7 +60,8 @@
         <div class="element" draggable="true" id="co2">CO₂</div>
     </div>
     
-    <div id="reaction-result">Drop elements over each other to combine!</div>
+    <div id="reaction-box">Drop elements here!</div>
+    <div id="reaction-result">No reaction yet.</div>
     
     <script>
         const reactions = {
@@ -59,27 +72,25 @@
 
         let selectedElements = [];
         const elements = document.querySelectorAll(".element");
+        const reactionBox = document.getElementById("reaction-box");
         const resultDiv = document.getElementById("reaction-result");
+
+        reactionBox.addEventListener("dragover", (e) => {
+            e.preventDefault();
+        });
+
+        reactionBox.addEventListener("drop", (e) => {
+            e.preventDefault();
+            const draggedElementId = e.dataTransfer.getData("text");
+            if (!selectedElements.includes(draggedElementId)) {
+                selectedElements.push(draggedElementId);
+            }
+            checkReaction();
+        });
 
         elements.forEach(element => {
             element.addEventListener("dragstart", (e) => {
                 e.dataTransfer.setData("text", e.target.id);
-            });
-            
-            element.addEventListener("dragover", (e) => {
-                e.preventDefault();
-            });
-            
-            element.addEventListener("drop", (e) => {
-                e.preventDefault();
-                const draggedElementId = e.dataTransfer.getData("text");
-                const targetElementId = e.target.id;
-                
-                if (draggedElementId !== targetElementId && !selectedElements.includes(draggedElementId)) {
-                    selectedElements.push(draggedElementId);
-                    selectedElements.push(targetElementId);
-                }
-                checkReaction();
             });
         });
 
