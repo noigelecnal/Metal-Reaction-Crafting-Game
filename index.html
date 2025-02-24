@@ -78,7 +78,7 @@
     </style>
 </head>
 <body>
-    <h1>What's the reaction?</h1>
+    <h1>Industrial Metal Reaction Game</h1>
     <p>Drag elements into the box and combine them to see reactions!</p>
 
     <div id="game-container">
@@ -100,7 +100,7 @@
         <button id="reset-button">Reset</button>
     </div>
 
-    <p id="version">Version 3.0</p>
+    <p id="version">Version 1.1</p>
 
     <script>
         const reactions = {
@@ -142,16 +142,17 @@
 
         function checkReaction() {
             const correctOrder = ["Fe", "O₂", "H₂O", "Fe₂O₃", "Al", "Cu", "CO₂"]; 
-            const sortedElements = [...new Set(selectedElements)].sort((a, b) => correctOrder.indexOf(a) - correctOrder.indexOf(b)).join("+");
+            let sortedElements = [...new Set(selectedElements)].sort((a, b) => correctOrder.indexOf(a) - correctOrder.indexOf(b));
+            let key = sortedElements.join("+");
 
-            console.log("Checking combination:", sortedElements); // Debugging
+            console.log("Checking combination:", key); // Debugging
 
-            if (reactions[sortedElements]) {
-                resultDiv.innerHTML = reactions[sortedElements];
+            if (reactions[key]) {
+                resultDiv.innerHTML = "✔ " + reactions[key];
                 selectedElements = []; // Reset after reaction
                 updateSelectedElements();
             } else {
-                resultDiv.innerHTML = `No reaction. Try different combinations! (${sortedElements})`;
+                resultDiv.innerHTML = `❌ No reaction. Try different combinations! (${key})`;
             }
         }
 
