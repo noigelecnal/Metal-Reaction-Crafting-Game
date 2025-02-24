@@ -141,7 +141,7 @@
         }
 
         function checkReaction() {
-            const correctOrder = ["Fe", "O₂", "H₂O", "Fe₂O₃", "Al", "Cu", "CO₂"]; 
+            const correctOrder = ["Fe", "O₂", "H₂O", "Fe₂O₃", "Al", "Cu", "CO₂","O₂", "H₂O",]; 
             let sortedElements = [...new Set(selectedElements)].sort((a, b) => correctOrder.indexOf(a) - correctOrder.indexOf(b));
             let key = sortedElements.join("+");
 
