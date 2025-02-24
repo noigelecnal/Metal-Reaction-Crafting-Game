@@ -1,3 +1,5 @@
+document.getElementById("check-reaction-button").addEventListener("click", checkReaction);
+
 function checkReaction() {
     const elementMap = {
         "iron": "Fe",
@@ -8,20 +10,17 @@ function checkReaction() {
         "co2": "CO₂"
     };
 
-    // Convert IDs to chemical symbols
-    const selectedSymbols = selectedElements.map(id => elementMap[id]);
-
-    // Sort and join to match the key in reactions object
-    const sortedElements = [...new Set(selectedSymbols)].sort().join("+");
+    // Convert element IDs to their correct chemical symbols
+    const selectedSymbols = selectedElements.map(id => elementMap[id]).filter(Boolean);
+    const sortedElements = selectedSymbols.sort().join("+").trim();
 
     console.log("Selected Elements:", selectedElements);
     console.log("Converted Symbols:", selectedSymbols);
     console.log("Final Reaction Key:", sortedElements);
 
-    if (reactions[sortedElements]) {
+    if (reactions.hasOwnProperty(sortedElements)) {
         resultDiv.innerHTML = reactions[sortedElements];
-        selectedElements = []; // Reset after reaction
     } else {
-        resultDiv.innerHTML = "No reaction. Try different combinations!";
+        resultDiv.innerHTML = `No reaction. Try different combinations! (${sortedElements})`;
     }
 }
