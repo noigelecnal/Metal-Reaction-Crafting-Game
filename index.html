@@ -51,7 +51,7 @@
             font-size: 20px;
             font-weight: bold;
         }
-        #check-reaction-button, #reset-button {
+        #check-button, #reset-button {
             margin-top: 10px;
             padding: 10px 20px;
             font-size: 16px;
@@ -59,7 +59,7 @@
             border: none;
             border-radius: 5px;
         }
-        #check-reaction-button {
+        #check-button {
             background-color: blue;
             color: white;
         }
@@ -87,17 +87,12 @@
             <p id="selected-elements"></p>
         </div>
         <div id="reaction-result">No reaction yet.</div>
-        <button id="check-reaction-button">Check Reaction</button> <!-- ✅ New button -->
+        <button id="check-button">Check Reaction</button>
         <button id="reset-button">Reset</button>
     </div>
     
     <script>
-        const reactions = {
-            "Fe+O₂+H₂O": "Rust Formation: 4Fe + 3O₂ + 6H₂O → 4Fe(OH)₃",
-            "Fe₂O₃+Al": "Thermite Reaction: Fe₂O₃ + 2Al → 2Fe + Al₂O₃",
-            "Cu+CO₂+O₂+H₂O": "Copper Patina: 2Cu + CO₂ + O₂ + H₂O → Cu₂(OH)₂CO₃"
-        };
-
+        // Map element IDs to their symbols
         const elementMap = {
             "iron": "Fe",
             "oxygen": "O₂",
@@ -107,12 +102,19 @@
             "co2": "CO₂"
         };
 
+        // Define valid reactions (sorted keys for consistency)
+        const reactions = {
+            "Fe+H₂O+O₂": "Rust Formation: 4Fe + 3O₂ + 6H₂O → 4Fe(OH)₃",
+            "Al+Fe₂O₃": "Thermite Reaction: Fe₂O₃ + 2Al → 2Fe + Al₂O₃",
+            "CO₂+Cu+H₂O+O₂": "Copper Patina: 2Cu + CO₂ + O₂ + H₂O → Cu₂(OH)₂CO₃"
+        };
+
         let selectedElements = [];
         const elements = document.querySelectorAll(".element");
         const reactionBox = document.getElementById("reaction-box");
         const resultDiv = document.getElementById("reaction-result");
         const selectedElementsDisplay = document.getElementById("selected-elements");
-        const checkButton = document.getElementById("check-reaction-button");
+        const checkButton = document.getElementById("check-button");
         const resetButton = document.getElementById("reset-button");
 
         reactionBox.addEventListener("dragover", (e) => {
@@ -135,11 +137,14 @@
         });
 
         function updateSelectedElements() {
-            selectedElementsDisplay.innerHTML = "Selected: " + selectedElements.map(id => elementMap[id]).join(", ");
+            const selectedSymbols = selectedElements.map(id => elementMap[id]).filter(Boolean);
+            selectedElementsDisplay.innerHTML = "Selected: " + selectedSymbols.join(", ");
         }
 
         function checkReaction() {
             const selectedSymbols = selectedElements.map(id => elementMap[id]).filter(Boolean);
+            
+            // Sort elements to match reaction keys
             const sortedElements = selectedSymbols.sort().join("+").trim();
 
             console.log("Selected Elements:", selectedElements);
