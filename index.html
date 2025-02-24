@@ -15,7 +15,7 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            margin-top: 50px;
+            margin-top: 20px;
         }
         .element {
             width: 100px;
@@ -47,32 +47,38 @@
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 20px;
+            padding: 10px;
         }
         #reaction-result {
             font-size: 20px;
             font-weight: bold;
+            margin-top: 10px;
         }
-        #reset-button, #check-reaction {
+        #check-reaction {
             margin-top: 10px;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
+            background-color: blue;
+            color: white;
             border: none;
             border-radius: 5px;
-            color: white;
         }
         #reset-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
             background-color: red;
-        }
-        #check-reaction {
-            background-color: blue;
+            color: white;
+            border: none;
+            border-radius: 5px;
         }
         #version {
             position: absolute;
             bottom: 10px;
             left: 10px;
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 14px;
             color: gray;
         }
     </style>
@@ -88,7 +94,7 @@
         <div class="element" draggable="true" id="aluminum">Al</div>
         <div class="element" draggable="true" id="copper">Cu</div>
         <div class="element" draggable="true" id="co2">CO₂</div>
-        <div class="element" draggable="true" id="iron-oxide">Fe₂O₃</div> <!-- Added Fe₂O₃ -->
+        <div class="element" draggable="true" id="iron-oxide">Fe₂O₃</div>
     </div>
     
     <div id="reaction-area">
@@ -100,8 +106,8 @@
         <button id="reset-button">Reset</button>
     </div>
 
-    <p id="version">Version: 1.0</p>
-
+    <p id="version">Version: 2.0</p>
+    
     <script>
         const reactions = {
             "Fe+O₂+H₂O": "Rust Formation: 4Fe + 3O₂ + 6H₂O → 4Fe(OH)₃",
@@ -109,12 +115,14 @@
             "Cu+CO₂+O₂+H₂O": "Copper Patina: 2Cu + CO₂ + O₂ + H₂O → Cu₂(OH)₂CO₃"
         };
 
+        const elementOrder = ["Fe", "O₂", "H₂O", "Fe₂O₃", "Al", "Cu", "CO₂"];
+
         let selectedElements = [];
         const elements = document.querySelectorAll(".element");
         const reactionBox = document.getElementById("reaction-box");
         const resultDiv = document.getElementById("reaction-result");
         const selectedElementsDisplay = document.getElementById("selected-elements");
-        const checkReactionButton = document.getElementById("check-reaction");
+        const checkButton = document.getElementById("check-reaction");
         const resetButton = document.getElementById("reset-button");
 
         reactionBox.addEventListener("dragover", (e) => {
@@ -124,33 +132,32 @@
         reactionBox.addEventListener("drop", (e) => {
             e.preventDefault();
             const draggedElementId = e.dataTransfer.getData("text");
-            if (!selectedElements.includes(draggedElementId)) {
-                selectedElements.push(draggedElementId);
+            const symbol = getSymbol(draggedElementId);
+            if (!selectedElements.includes(symbol)) {
+                selectedElements.push(symbol);
                 updateSelectedElements();
             }
         });
 
         elements.forEach(element => {
             element.addEventListener("dragstart", (e) => {
-                e.dataTransfer.setData("text", e.target.id);
+                e.dataTransfer.setData("text", e.target.getAttribute("id")); 
             });
         });
 
         function updateSelectedElements() {
-            selectedElementsDisplay.innerHTML = "Selected: " + selectedElements.map(id => getSymbol(id)).join(", ");
+            selectedElementsDisplay.innerHTML = "Selected: " + (selectedElements.length ? selectedElements.join(", ") : "(None)");
         }
 
         function checkReaction() {
-            const sortedElements = selectedElements.map(id => getSymbol(id)).sort().join("+");
-            console.log("Checking reaction for:", sortedElements); // Debugging
-
+            const sortedElements = selectedElements.slice().sort((a, b) => elementOrder.indexOf(a) - elementOrder.indexOf(b)).join("+");
             if (reactions[sortedElements]) {
                 resultDiv.innerHTML = reactions[sortedElements];
                 selectedElements = []; // Reset after reaction
-                updateSelectedElements();
             } else {
-                resultDiv.innerHTML = `No reaction. Try different combinations! (${sortedElements})`;
+                resultDiv.innerHTML = "No reaction. Try different combinations! (" + sortedElements + ")";
             }
+            updateSelectedElements();
         }
 
         function getSymbol(id) {
@@ -166,11 +173,11 @@
             return symbolMap[id] || id;
         }
 
-        checkReactionButton.addEventListener("click", checkReaction);
+        checkButton.addEventListener("click", checkReaction);
 
         resetButton.addEventListener("click", () => {
             selectedElements = [];
-            selectedElementsDisplay.innerHTML = "";
+            selectedElementsDisplay.innerHTML = "Selected: (None)";
             resultDiv.innerHTML = "No reaction yet.";
         });
     </script>
