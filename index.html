@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metal Reaction Crafting Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Industrial Metal Reaction Game</h1>
+    <p>Drag and combine elements to see reactions!</p>
+    
+    <div id="game-container">
+        <div class="element" draggable="true" id="iron">Fe</div>
+        <div class="element" draggable="true" id="oxygen">O₂</div>
+        <div class="element" draggable="true" id="water">H₂O</div>
+        <div class="element" draggable="true" id="aluminum">Al</div>
+        <div class="element" draggable="true" id="copper">Cu</div>
+        <div class="element" draggable="true" id="co2">CO₂</div>
+    </div>
+
+    <div id="dropzone">
+        Drop elements here!
+    </div>
+
+    <div id="reaction-result">No reaction yet.</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
