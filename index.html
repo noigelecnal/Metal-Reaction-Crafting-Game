@@ -51,15 +51,21 @@
             font-size: 20px;
             font-weight: bold;
         }
-        #reset-button {
-            margin-top: 20px;
+        #check-reaction-button, #reset-button {
+            margin-top: 10px;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
-            background-color: red;
-            color: white;
             border: none;
             border-radius: 5px;
+        }
+        #check-reaction-button {
+            background-color: blue;
+            color: white;
+        }
+        #reset-button {
+            background-color: red;
+            color: white;
         }
     </style>
 </head>
@@ -75,15 +81,13 @@
         <div class="element" draggable="true" id="copper">Cu</div>
         <div class="element" draggable="true" id="co2">CO₂</div>
     </div>
-
-<button id="check-reaction-button">Check Reaction</button>
-
-
+    
     <div id="reaction-area">
         <div id="reaction-box">Drop elements here!
             <p id="selected-elements"></p>
         </div>
         <div id="reaction-result">No reaction yet.</div>
+        <button id="check-reaction-button">Check Reaction</button> <!-- ✅ New button -->
         <button id="reset-button">Reset</button>
     </div>
     
@@ -94,11 +98,21 @@
             "Cu+CO₂+O₂+H₂O": "Copper Patina: 2Cu + CO₂ + O₂ + H₂O → Cu₂(OH)₂CO₃"
         };
 
+        const elementMap = {
+            "iron": "Fe",
+            "oxygen": "O₂",
+            "water": "H₂O",
+            "aluminum": "Al",
+            "copper": "Cu",
+            "co2": "CO₂"
+        };
+
         let selectedElements = [];
         const elements = document.querySelectorAll(".element");
         const reactionBox = document.getElementById("reaction-box");
         const resultDiv = document.getElementById("reaction-result");
         const selectedElementsDisplay = document.getElementById("selected-elements");
+        const checkButton = document.getElementById("check-reaction-button");
         const resetButton = document.getElementById("reset-button");
 
         reactionBox.addEventListener("dragover", (e) => {
@@ -112,7 +126,6 @@
                 selectedElements.push(draggedElementId);
                 updateSelectedElements();
             }
-            checkReaction();
         });
 
         elements.forEach(element => {
@@ -122,18 +135,25 @@
         });
 
         function updateSelectedElements() {
-            selectedElementsDisplay.innerHTML = "Selected: " + selectedElements.join(", ");
+            selectedElementsDisplay.innerHTML = "Selected: " + selectedElements.map(id => elementMap[id]).join(", ");
         }
 
         function checkReaction() {
-            const sortedElements = [...new Set(selectedElements)].sort().join("+");
-            if (reactions[sortedElements]) {
+            const selectedSymbols = selectedElements.map(id => elementMap[id]).filter(Boolean);
+            const sortedElements = selectedSymbols.sort().join("+").trim();
+
+            console.log("Selected Elements:", selectedElements);
+            console.log("Converted Symbols:", selectedSymbols);
+            console.log("Final Reaction Key:", sortedElements);
+
+            if (reactions.hasOwnProperty(sortedElements)) {
                 resultDiv.innerHTML = reactions[sortedElements];
-                selectedElements = []; // Reset after reaction
             } else {
-                resultDiv.innerHTML = "No reaction. Try different combinations!";
+                resultDiv.innerHTML = `No reaction. Try different combinations! (${sortedElements})`;
             }
         }
+
+        checkButton.addEventListener("click", checkReaction);
 
         resetButton.addEventListener("click", () => {
             selectedElements = [];
