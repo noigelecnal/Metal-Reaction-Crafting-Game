@@ -1,5 +1,4 @@
 function checkReaction() {
-    // Map element IDs to their symbols
     const elementMap = {
         "iron": "Fe",
         "oxygen": "O₂",
@@ -9,13 +8,16 @@ function checkReaction() {
         "co2": "CO₂"
     };
 
-    // Convert selected element IDs to their symbols
+    // Convert IDs to chemical symbols
     const selectedSymbols = selectedElements.map(id => elementMap[id]);
 
-    // Sort and join to form the key for reaction lookup
+    // Sort and join to match the key in reactions object
     const sortedElements = [...new Set(selectedSymbols)].sort().join("+");
 
-    // Check if the combination exists in the reactions object
+    console.log("Selected Elements:", selectedElements);
+    console.log("Converted Symbols:", selectedSymbols);
+    console.log("Final Reaction Key:", sortedElements);
+
     if (reactions[sortedElements]) {
         resultDiv.innerHTML = reactions[sortedElements];
         selectedElements = []; // Reset after reaction
