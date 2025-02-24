@@ -9,6 +9,7 @@
             font-family: Arial, sans-serif;
             text-align: center;
             background-color: #f4f4f4;
+            position: relative;
         }
         #game-container {
             display: flex;
@@ -51,21 +52,28 @@
             font-size: 20px;
             font-weight: bold;
         }
-        #check-button, #reset-button {
+        #reset-button, #check-reaction {
             margin-top: 10px;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
             border: none;
             border-radius: 5px;
-        }
-        #check-button {
-            background-color: blue;
             color: white;
         }
         #reset-button {
             background-color: red;
-            color: white;
+        }
+        #check-reaction {
+            background-color: blue;
+        }
+        #version {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: gray;
         }
     </style>
 </head>
@@ -74,15 +82,13 @@
     <p>Drag elements into the box and combine them to see reactions!</p>
     
     <div id="game-container">
-        <div class="element" draggable="true" id="iron-oxide">Fe₂O₃</div>
         <div class="element" draggable="true" id="iron">Fe</div>
         <div class="element" draggable="true" id="oxygen">O₂</div>
         <div class="element" draggable="true" id="water">H₂O</div>
         <div class="element" draggable="true" id="aluminum">Al</div>
         <div class="element" draggable="true" id="copper">Cu</div>
         <div class="element" draggable="true" id="co2">CO₂</div>
-
-
+        <div class="element" draggable="true" id="iron-oxide">Fe₂O₃</div> <!-- Added Fe₂O₃ -->
     </div>
     
     <div id="reaction-area">
@@ -90,35 +96,25 @@
             <p id="selected-elements"></p>
         </div>
         <div id="reaction-result">No reaction yet.</div>
-        <button id="check-button">Check Reaction</button>
+        <button id="check-reaction">Check Reaction</button>
         <button id="reset-button">Reset</button>
     </div>
-    
+
+    <p id="version">Version: 1.0</p>
+
     <script>
-        // Map element IDs to their symbols
-        const elementMap = {
-            "iron": "Fe",
-            "oxygen": "O₂",
-            "water": "H₂O",
-            "aluminum": "Al",
-            "copper": "Cu",
-            "co2": "CO₂"
-        };
-
-        // Define valid reactions (sorted keys for consistency)
         const reactions = {
-    "Fe+O₂+H₂O": "Rust Formation: 4Fe + 3O₂ + 6H₂O → 4Fe(OH)₃",
-    "Fe₂O₃+Al": "Thermite Reaction: Fe₂O₃ + 2Al → 2Fe + Al₂O₃",
-    "Cu+CO₂+O₂+H₂O": "Copper Patina: 2Cu + CO₂ + O₂ + H₂O → Cu₂(OH)₂CO₃"
+            "Fe+O₂+H₂O": "Rust Formation: 4Fe + 3O₂ + 6H₂O → 4Fe(OH)₃",
+            "Fe₂O₃+Al": "Thermite Reaction: Fe₂O₃ + 2Al → 2Fe + Al₂O₃",
+            "Cu+CO₂+O₂+H₂O": "Copper Patina: 2Cu + CO₂ + O₂ + H₂O → Cu₂(OH)₂CO₃"
         };
-
 
         let selectedElements = [];
         const elements = document.querySelectorAll(".element");
         const reactionBox = document.getElementById("reaction-box");
         const resultDiv = document.getElementById("reaction-result");
         const selectedElementsDisplay = document.getElementById("selected-elements");
-        const checkButton = document.getElementById("check-button");
+        const checkReactionButton = document.getElementById("check-reaction");
         const resetButton = document.getElementById("reset-button");
 
         reactionBox.addEventListener("dragover", (e) => {
@@ -141,28 +137,36 @@
         });
 
         function updateSelectedElements() {
-            const selectedSymbols = selectedElements.map(id => elementMap[id]).filter(Boolean);
-            selectedElementsDisplay.innerHTML = "Selected: " + selectedSymbols.join(", ");
+            selectedElementsDisplay.innerHTML = "Selected: " + selectedElements.map(id => getSymbol(id)).join(", ");
         }
 
         function checkReaction() {
-            const selectedSymbols = selectedElements.map(id => elementMap[id]).filter(Boolean);
-            
-            // Sort elements to match reaction keys
-            const sortedElements = selectedSymbols.sort().join("+").trim();
+            const sortedElements = selectedElements.map(id => getSymbol(id)).sort().join("+");
+            console.log("Checking reaction for:", sortedElements); // Debugging
 
-            console.log("Selected Elements:", selectedElements);
-            console.log("Converted Symbols:", selectedSymbols);
-            console.log("Final Reaction Key:", sortedElements);
-
-            if (reactions.hasOwnProperty(sortedElements)) {
+            if (reactions[sortedElements]) {
                 resultDiv.innerHTML = reactions[sortedElements];
+                selectedElements = []; // Reset after reaction
+                updateSelectedElements();
             } else {
                 resultDiv.innerHTML = `No reaction. Try different combinations! (${sortedElements})`;
             }
         }
 
-        checkButton.addEventListener("click", checkReaction);
+        function getSymbol(id) {
+            const symbolMap = {
+                "iron": "Fe",
+                "oxygen": "O₂",
+                "water": "H₂O",
+                "aluminum": "Al",
+                "copper": "Cu",
+                "co2": "CO₂",
+                "iron-oxide": "Fe₂O₃"
+            };
+            return symbolMap[id] || id;
+        }
+
+        checkReactionButton.addEventListener("click", checkReaction);
 
         resetButton.addEventListener("click", () => {
             selectedElements = [];
